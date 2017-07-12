@@ -32,9 +32,9 @@ public class FragmentHome extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    //private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-    int REQUEST_ENABLE_BT = 1;
+    //int REQUEST_ENABLE_BT = 1;
 
     public FragmentHome() {
         // Required empty public constructor
@@ -65,7 +65,7 @@ public class FragmentHome extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        String status = "";
+        /**String status = "";
         if (mBluetoothAdapter == null){
             Toast.makeText(getContext(), "mBluetoothAdapter = Null", Toast.LENGTH_LONG).show();
         }else if(!mBluetoothAdapter.isEnabled()){
@@ -76,7 +76,7 @@ public class FragmentHome extends Fragment {
                     "\nName: " + mBluetoothAdapter.getName() +
                     "\nState: " + mBluetoothAdapter.getState();
             Toast.makeText(getContext(), status, Toast.LENGTH_LONG).show();
-        }
+        }**/
     }
 
     @Override
