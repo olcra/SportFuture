@@ -1,127 +1,97 @@
 package com.upv.olcra.sportfuture;
 
-import android.bluetooth.BluetoothAdapter;
-import android.content.Context;
-import android.content.Intent;
+import android.app.Activity;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentHome.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentHome#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.Random;
+
 public class FragmentHome extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
-
-    //private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-    //int REQUEST_ENABLE_BT = 1;
-
-    public FragmentHome() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentHome.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentHome newInstance(String param1, String param2) {
-        FragmentHome fragment = new FragmentHome();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        /**String status = "";
-        if (mBluetoothAdapter == null){
-            Toast.makeText(getContext(), "mBluetoothAdapter = Null", Toast.LENGTH_LONG).show();
-        }else if(!mBluetoothAdapter.isEnabled()){
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        }else{
-            status ="Address: " + mBluetoothAdapter.getAddress() +
-                    "\nName: " + mBluetoothAdapter.getName() +
-                    "\nState: " + mBluetoothAdapter.getState();
-            Toast.makeText(getContext(), status, Toast.LENGTH_LONG).show();
-        }**/
-    }
+    private final Handler mHandler = new Handler();
+    private Runnable mTimer, mTimer2, mTimer3;
+    private LineGraphSeries<DataPoint> mSeries;
+    private static LineGraphSeries<DataPoint> mSeries2;
+    private static LineGraphSeries<DataPoint> mSeries3;
+    private static double graphLastXValue = 5d;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_fragment_home, container, false);
-    }
+        View rootView = inflater.inflate(R.layout.fragment_fragment_home, container, false);
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+       /* GraphView graph = (GraphView) rootView.findViewById(R.id.graph);
+        mSeries = new LineGraphSeries<>();
+        mSeries.setColor(Color.BLACK);
+        mSeries2 = new LineGraphSeries<>();
+        mSeries2.setColor(Color.BLUE);
+        mSeries3 = new LineGraphSeries<>();
+        mSeries3.setColor(Color.GREEN);
+        graph.addSeries(mSeries);
+        graph.addSeries(mSeries2);
+        graph.addSeries(mSeries3);
+        graph.getViewport().setXAxisBoundsManual(true);
+        graph.getViewport().setMinX(0);
+        graph.getViewport().setMaxX(40);
+        graph.setTitle("Random Numbers");*/
+
+        return rootView;
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public void onResume() {
+        super.onResume();
+        /*mTimer = new Runnable() {
+            @Override
+            public void run() {
+                graphLastXValue += 1d;
+                mSeries.appendData(new DataPoint(graphLastXValue, getRandom()), true, 40);
+                mHandler.postDelayed(this, 200);
+            }
+        };
+        mHandler.postDelayed(mTimer, 300);*/
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onPause() {
+        mHandler.removeCallbacks(mTimer);
+        super.onPause();
+    }
+
+    /*private DataPoint[] generateData() {
+        int count = 30;
+        DataPoint[] values = new DataPoint[count];
+        for (int i=0; i<count; i++) {
+            double x = i;
+            double f = mRand.nextDouble()*0.15+0.3;
+            double y = Math.sin(i*f+2) + mRand.nextDouble()*0.3;
+            DataPoint v = new DataPoint(x, y);
+            values[i] = v;
+        }
+        return values;
+    }
+
+    double mLastRandom = 2;
+    Random mRand = new Random();
+    private double getRandom() {
+        return mLastRandom += mRand.nextDouble()*0.5 - 0.25;
+    }
+*/
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        public void updateData(String data);
     }
 }
