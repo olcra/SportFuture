@@ -1,14 +1,19 @@
 package com.upv.olcra.sportfuture;
 
 import android.app.Activity;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -28,6 +33,11 @@ public class FragmentHome extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_fragment_home, container, false);
+        rootView.setBackgroundColor(getResources().getColor(android.R.color.white));
+
+        FrameLayout frameLayout = (FrameLayout) rootView.findViewById(R.id.frameLayout);
+        frameLayout.addView(new Rectangle(getActivity()));
+
 
        /* GraphView graph = (GraphView) rootView.findViewById(R.id.graph);
         mSeries = new LineGraphSeries<>();
@@ -46,6 +56,23 @@ public class FragmentHome extends Fragment {
 
         return rootView;
     }
+
+    private class Rectangle extends View {
+        Paint paint = new Paint();
+
+        public Rectangle(FragmentActivity activity) {
+            super(activity);
+        }
+
+        @Override
+        public void draw(Canvas canvas){
+            paint.setColor(Color.BLUE);
+            Rect rect = new Rect(20,50,200,112);
+            canvas.drawRect(rect,paint);
+            super.draw(canvas);
+        }
+    }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -94,4 +121,6 @@ public class FragmentHome extends Fragment {
     public interface OnFragmentInteractionListener {
         public void updateData(String data);
     }
+
+
 }

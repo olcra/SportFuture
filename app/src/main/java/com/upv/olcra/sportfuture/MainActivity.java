@@ -45,8 +45,7 @@ import static com.upv.olcra.sportfuture.Utils.convertirArray;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        FragmentHelp.OnFragmentInteractionListener,
-        FragmentHome.OnFragmentInteractionListener {
+        FragmentHelp.OnFragmentInteractionListener {
 
     private BluetoothAdapter mBluetoothAdapter;
     private int REQUEST_ENABLE_BT = 1;
@@ -139,7 +138,12 @@ public class MainActivity extends AppCompatActivity
         super.onPause();
         if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
             scanLeDevice(false);
-            mGatt.disconnect();
+            try{
+                mGatt.disconnect();
+            }
+            catch (NullPointerException e){
+                Log.i("gatt empty",e.toString());
+            }
         }
     }
 
@@ -300,10 +304,9 @@ public class MainActivity extends AppCompatActivity
         public void onScanResult(int callbackType, ScanResult result) {
             Log.i("callbackType", String.valueOf(callbackType));
             Log.i("result", result.toString());
-            BluetoothDevice btDevice = result.getDevice();
-            if(btDevice.getAddress().equals(deviceMAC)){
-                System.out.println("Device 33:33:33:33:33:33, connecting...");
-                connectToDevice(btDevice);
+            BluetoothDevice bluetoothDevice = result.getDevice();
+            if(bluetoothDevice.getAddress().equals(deviceMAC)){
+                connectToDevice(bluetoothDevice);
             }
         }
 
@@ -339,10 +342,11 @@ public class MainActivity extends AppCompatActivity
 
     public void connectToDevice(BluetoothDevice device) {
         if (mGatt == null) {
-            mGatt = device.connectGatt(this, true, gattCallback);
-            Toast.makeText(this, "Connected to Device", Toast.LENGTH_SHORT).show();
-            scanLeDevice(false);
-            // will stop after first device detection
+
+                mGatt = device.connectGatt(this, true, gattCallback);
+                Toast.makeText(this, "Connected to Device", Toast.LENGTH_SHORT).show();
+                scanLeDevice(false);
+
         }
     }
 
@@ -416,10 +420,4 @@ public class MainActivity extends AppCompatActivity
 
         }
     };
-
-    @Override
-    public void updateData(String data) {
-        TextView textView = (TextView) findViewById(R.id.textView3);
-        textView.setText(data);
-    }
 }
