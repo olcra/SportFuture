@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,12 +56,29 @@ public class MainActivity extends AppCompatActivity
     private ScanSettings settings;
     private List<ScanFilter> filters;
     private BluetoothGatt mGatt;
-    private String deviceMAC = "33:33:33:33:33:33";
+    //private String deviceMAC = "33:33:33:33:33:33";
+    private String deviceMAC = "E0:C7:9D:5C:DC:B8";
+    //private UUID SERVICE_UUID = UUID.fromString("0000FF60-0000-1000-8000-00805f9b34fb");
     private UUID SERVICE_UUID = UUID.fromString("0000FF60-0000-1000-8000-00805f9b34fb");
-    private UUID CHARACTERISTIC_UUID = UUID.fromString("0000FF61-0000-1000-8000-00805f9b34fb");
+
+    private UUID CHARACTERISTIC_UUID_1 = UUID.fromString("0000FF61-0000-1000-8000-00805f9b34fb");
+    private UUID CHARACTERISTIC_UUID_2 = UUID.fromString("0000FF62-0000-1000-8000-00805f9b34fb");
+    private UUID CHARACTERISTIC_UUID_3 = UUID.fromString("0000FF63-0000-1000-8000-00805f9b34fb");
+    private UUID CHARACTERISTIC_UUID_4 = UUID.fromString("0000FF64-0000-1000-8000-00805f9b34fb");
+    private UUID CHARACTERISTIC_UUID_5 = UUID.fromString("0000FF65-0000-1000-8000-00805f9b34fb");
+    private UUID CHARACTERISTIC_UUID_6 = UUID.fromString("0000FF66-0000-1000-8000-00805f9b34fb");
+    private UUID CHARACTERISTIC_UUID_7 = UUID.fromString("0000FF67-0000-1000-8000-00805f9b34fb");
+
     private boolean mScanning = false;
 
-    private BluetoothGattCharacteristic characteristic;
+    private BluetoothGattCharacteristic characteristic_1;
+    private BluetoothGattCharacteristic characteristic_2;
+    private BluetoothGattCharacteristic characteristic_3;
+    private BluetoothGattCharacteristic characteristic_4;
+    private BluetoothGattCharacteristic characteristic_5;
+    private BluetoothGattCharacteristic characteristic_6;
+    private BluetoothGattCharacteristic characteristic_7;
+
 
 
     @Override
@@ -172,15 +190,13 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
         if (!mScanning) {
             menu.findItem(R.id.menu_stop).setVisible(false);
             menu.findItem(R.id.menu_scan).setVisible(true);
-            //menu.findItem(R.id.menu_refresh).setActionView(null);
         } else {
             menu.findItem(R.id.menu_stop).setVisible(true);
             menu.findItem(R.id.menu_scan).setVisible(false);
-            //menu.findItem(R.id.menu_refresh).setActionView(
-                   //R.layout.actionbar_indeterminate_progress);
         }
         return true;
     }
@@ -276,16 +292,16 @@ public class MainActivity extends AppCompatActivity
                         invalidateOptionsMenu();
                     } else {
                         mLEScanner.stopScan(mScanCallback);
-
+                        mScanning = false;
                     }
                 }
             }, SCAN_PERIOD);
-            mScanning = true;
 
             if (Build.VERSION.SDK_INT < 21) {
                 mBluetoothAdapter.startLeScan(mLeScanCallback);
             } else {
                 mLEScanner.startScan(filters, settings, mScanCallback);
+                mScanning = true;
             }
         } else {
             mScanning = false;
@@ -307,6 +323,7 @@ public class MainActivity extends AppCompatActivity
             BluetoothDevice bluetoothDevice = result.getDevice();
             if(bluetoothDevice.getAddress().equals(deviceMAC)){
                 connectToDevice(bluetoothDevice);
+                mScanning = false;
             }
         }
 
@@ -320,6 +337,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onScanFailed(int errorCode) {
             Log.e("Scan Failed", "Error Code: " + errorCode);
+            mScanning = false;
         }
     };
 
@@ -343,9 +361,10 @@ public class MainActivity extends AppCompatActivity
     public void connectToDevice(BluetoothDevice device) {
         if (mGatt == null) {
 
-                mGatt = device.connectGatt(this, true, gattCallback);
-                Toast.makeText(this, "Connected to Device", Toast.LENGTH_SHORT).show();
-                scanLeDevice(false);
+            mGatt = device.connectGatt(this, true, gattCallback);
+            Toast.makeText(this, "Connected to Device", Toast.LENGTH_SHORT).show();
+            mScanning = false;
+            scanLeDevice(false);
 
         }
     }
@@ -357,12 +376,14 @@ public class MainActivity extends AppCompatActivity
             switch (newState) {
                 case BluetoothProfile.STATE_CONNECTED:
                     Log.i("gattCallback", "STATE_CONNECTED");
-                    //homeTextView.setText("Connected");
+                    mScanning = false;
                     gatt.discoverServices();
                     break;
                 case BluetoothProfile.STATE_DISCONNECTED:
                     Log.e("gattCallback", "STATE_DISCONNECTED");
-                    //homeTextView.setText("Disconnected");
+                    gatt.close();
+                    mGatt = null;
+                    mScanning = false;
                     break;
                 default:
                     Log.e("gattCallback", "STATE_OTHER");
@@ -378,19 +399,64 @@ public class MainActivity extends AppCompatActivity
             //gatt.readCharacteristic(services.get(1).getCharacteristics().get(0));
             for(BluetoothGattService service : services){
                 if(service.getUuid().equals(SERVICE_UUID)){
-                    characteristic = service.getCharacteristic(CHARACTERISTIC_UUID);
+                    characteristic_1 = service.getCharacteristic(CHARACTERISTIC_UUID_1);
+                    characteristic_2 = service.getCharacteristic(CHARACTERISTIC_UUID_2);
+                    characteristic_3 = service.getCharacteristic(CHARACTERISTIC_UUID_3);
+                    characteristic_4 = service.getCharacteristic(CHARACTERISTIC_UUID_4);
+                    characteristic_5 = service.getCharacteristic(CHARACTERISTIC_UUID_5);
+                    characteristic_6 = service.getCharacteristic(CHARACTERISTIC_UUID_6);
+                    characteristic_7 = service.getCharacteristic(CHARACTERISTIC_UUID_7);
                 }
             }
-            //List<BluetoothGattDescriptor> aux = characteristic.getDescriptors();
-            //BluetoothGattDescriptor descriptor = characteristic.getDescriptor(CHARACTERISTIC_UUID);
-            for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
-                descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-                mGatt.writeDescriptor(descriptor);            }
-            //descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            //gatt.writeDescriptor(descriptor);
-            gatt.readCharacteristic(characteristic);
-            gatt.setCharacteristicNotification(characteristic,true);
 
+            for (BluetoothGattDescriptor descriptor : characteristic_1.getDescriptors()) {
+                descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mGatt.writeDescriptor(descriptor);
+            }
+            gatt.readCharacteristic(characteristic_1);
+            gatt.setCharacteristicNotification(characteristic_1,true);
+
+            for (BluetoothGattDescriptor descriptor : characteristic_2.getDescriptors()) {
+                descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mGatt.writeDescriptor(descriptor);
+            }
+            gatt.readCharacteristic(characteristic_2);
+            gatt.setCharacteristicNotification(characteristic_2,true);
+
+            for (BluetoothGattDescriptor descriptor : characteristic_3.getDescriptors()) {
+                descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mGatt.writeDescriptor(descriptor);
+            }
+            gatt.readCharacteristic(characteristic_3);
+            gatt.setCharacteristicNotification(characteristic_3,true);
+
+            for (BluetoothGattDescriptor descriptor : characteristic_4.getDescriptors()) {
+                descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mGatt.writeDescriptor(descriptor);
+            }
+            gatt.readCharacteristic(characteristic_4);
+            gatt.setCharacteristicNotification(characteristic_4,true);
+
+            for (BluetoothGattDescriptor descriptor : characteristic_5.getDescriptors()) {
+                descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mGatt.writeDescriptor(descriptor);
+            }
+            gatt.readCharacteristic(characteristic_5);
+            gatt.setCharacteristicNotification(characteristic_5,true);
+
+            for (BluetoothGattDescriptor descriptor : characteristic_6.getDescriptors()) {
+                descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mGatt.writeDescriptor(descriptor);
+            }
+            gatt.readCharacteristic(characteristic_6);
+            gatt.setCharacteristicNotification(characteristic_6,true);
+
+            for (BluetoothGattDescriptor descriptor : characteristic_7.getDescriptors()) {
+                descriptor.setValue( BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                mGatt.writeDescriptor(descriptor);
+            }
+            gatt.readCharacteristic(characteristic_7);
+            gatt.setCharacteristicNotification(characteristic_7,true);
 
             /*BluetoothGattCharacteristic characteristic = services.get(2).getCharacteristics().get(8);
             for (BluetoothGattDescriptor descriptor : characteristic.getDescriptors()) {
@@ -414,9 +480,11 @@ public class MainActivity extends AppCompatActivity
             //read the characteristic data
             //ByteBuffer.wrap(data).getInt();
             byte[] data = characteristic.getValue();
+            UUID uuid = characteristic.getUuid();
             //convAceleracion(data);
             //convGiroscopio(data);
-            convertirArray(data);
+            //convertirArray(data, uuid);
+            System.out.println("UUID: " + uuid + " Valor: " + Arrays.toString(data));
 
         }
     };
