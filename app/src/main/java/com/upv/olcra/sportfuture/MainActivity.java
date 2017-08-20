@@ -33,15 +33,12 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
-
-import static com.upv.olcra.sportfuture.Utils.convertirArray;
 
 
 public class MainActivity extends AppCompatActivity
@@ -231,22 +228,31 @@ public class MainActivity extends AppCompatActivity
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-            item.setChecked(true);
+
+            /*item.setChecked(true);
             setTitle(item.getTitle());
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
+            drawer.closeDrawer(GravityCompat.START);*/
 
         } else if (id == R.id.nav_settings) {
-            getFragmentManager().beginTransaction()
-                    .replace(R.id.flContent, new SettingsFragment())
+
+            fragmentClass = SettingsFragment.class;
+            try{
+                fragment = (Fragment) fragmentClass.newInstance();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            //getFragmentManager().beginTransaction().replace(R.id.flContent,new SettingsFragment1()).commit();
+
+            /*getFragmentManager().beginTransaction()
+                    .replace(R.id.flContent, new SettingsFragment1())
                     .commit();
             item.setChecked(true);
             setTitle(item.getTitle());
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
-            //fragmentClass = SettingsFragment.class;
+            //fragmentClass = SettingsFragment1.class;*/
         } else if (id == R.id.nav_help) {
             fragmentClass = FragmentHelp.class;
             try {
@@ -254,14 +260,21 @@ public class MainActivity extends AppCompatActivity
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            fragmentManager = getSupportFragmentManager();
+            /*fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
             item.setChecked(true);
             setTitle(item.getTitle());
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
+            drawer.closeDrawer(GravityCompat.START);*/
 
         }
+
+        fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        item.setChecked(true);
+        setTitle(item.getTitle());
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
