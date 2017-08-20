@@ -30,6 +30,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -99,6 +100,14 @@ public class MainActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
         }
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        GlobalVariables.displayHeight = displayMetrics.heightPixels;
+        System.out.println("Height: " + GlobalVariables.displayHeight);
+        GlobalVariables.displayWidth = displayMetrics.widthPixels;
+        System.out.println("Width: " + GlobalVariables.displayWidth);
+
 
         /**FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -221,7 +230,22 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fragmentManager;
         DrawerLayout drawer;
 
-        if (id == R.id.nav_home) {
+        switch(item.getItemId()){
+            case R.id.nav_home:
+                fragmentClass = FragmentHome.class;
+                break;
+            case R.id.nav_settings:
+                fragmentClass = SettingsFragment.class;
+                break;
+            case R.id.nav_help:
+                fragmentClass = FragmentHelp.class;
+                break;
+            default:
+                fragmentClass = FragmentHome.class;
+                break;
+        }
+
+        /*if (id == R.id.nav_home) {
             fragmentClass = FragmentHome.class;
             try {
                 fragment = (Fragment) fragmentClass.newInstance();
@@ -229,10 +253,10 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
 
-            /*item.setChecked(true);
+            *//*item.setChecked(true);
             setTitle(item.getTitle());
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);*/
+            drawer.closeDrawer(GravityCompat.START);*//*
 
         } else if (id == R.id.nav_settings) {
 
@@ -245,14 +269,14 @@ public class MainActivity extends AppCompatActivity
 
             //getFragmentManager().beginTransaction().replace(R.id.flContent,new SettingsFragment1()).commit();
 
-            /*getFragmentManager().beginTransaction()
+            *//*getFragmentManager().beginTransaction()
                     .replace(R.id.flContent, new SettingsFragment1())
                     .commit();
             item.setChecked(true);
             setTitle(item.getTitle());
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
-            //fragmentClass = SettingsFragment1.class;*/
+            //fragmentClass = SettingsFragment1.class;*//*
         } else if (id == R.id.nav_help) {
             fragmentClass = FragmentHelp.class;
             try {
@@ -260,13 +284,19 @@ public class MainActivity extends AppCompatActivity
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            /*fragmentManager = getSupportFragmentManager();
+            *//*fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
             item.setChecked(true);
             setTitle(item.getTitle());
             drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);*/
+            drawer.closeDrawer(GravityCompat.START);*//*
 
+        }*/
+
+        try {
+            fragment = (Fragment) fragmentClass.newInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         fragmentManager = getSupportFragmentManager();
