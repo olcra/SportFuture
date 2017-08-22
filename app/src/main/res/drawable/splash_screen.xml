@@ -5,7 +5,7 @@
 
     <item>
         <bitmap
-            android:gravity="fill"
+            android:gravity="clip_horizontal"
             android:src="@drawable/logo_sport_future"/>
     </item>
 
