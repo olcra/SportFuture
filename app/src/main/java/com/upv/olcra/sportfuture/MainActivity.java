@@ -18,7 +18,6 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,8 +42,7 @@ import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        FragmentHelp.OnFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private BluetoothAdapter mBluetoothAdapter;
     private int REQUEST_ENABLE_BT = 1;
@@ -224,7 +222,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
+        //int id = item.getItemId();
         Fragment fragment = null;
         Class fragmentClass = null;
         FragmentManager fragmentManager;
@@ -235,7 +233,7 @@ public class MainActivity extends AppCompatActivity
                 fragmentClass = FragmentHome.class;
                 break;
             case R.id.nav_settings:
-                fragmentClass = SettingsFragment.class;
+                fragmentClass = FragmentSettings.class;
                 break;
             case R.id.nav_help:
                 fragmentClass = FragmentHelp.class;
@@ -260,7 +258,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_settings) {
 
-            fragmentClass = SettingsFragment.class;
+            fragmentClass = FragmentSettings.class;
             try{
                 fragment = (Fragment) fragmentClass.newInstance();
             }catch (Exception e){
@@ -306,11 +304,6 @@ public class MainActivity extends AppCompatActivity
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
     }
 
     @Override

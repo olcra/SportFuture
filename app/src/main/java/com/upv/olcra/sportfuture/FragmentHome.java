@@ -1,5 +1,6 @@
 package com.upv.olcra.sportfuture;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -24,30 +25,28 @@ public class FragmentHome extends Fragment {
                              Bundle savedInstanceState) {
         drawView = new DrawView(getContext());
         drawView.setBackgroundColor(Color.WHITE);
-        View view = inflater.inflate(R.layout.fragment_fragment_home, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_fragment_home, container, false);
+
     }
 
 
 
-    /*@Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
     }
 
     @Override
     public void onResume() {
+
         super.onResume();
     }
+
 
     @Override
     public void onPause() {
         super.onPause();
     }
 
-   *//* public interface OnFragmentInteractionListener {
-        public void updateData(String data);
-    }*//*
-*/
 
 }

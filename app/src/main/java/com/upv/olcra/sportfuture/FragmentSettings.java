@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-public class SettingsFragment extends Fragment {
+public class FragmentSettings extends Fragment {
 
     RadioGroup radioGroup;
     RadioButton radioButtonLow;
@@ -18,7 +18,7 @@ public class SettingsFragment extends Fragment {
     RadioButton radioButtonHigh;
     GlobalVariables myGV;
 
-    public SettingsFragment() {
+    public FragmentSettings() {
         // Required empty public constructor
     }
 
@@ -32,7 +32,7 @@ public class SettingsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final View view = inflater.inflate(R.layout.fragment_settings2, container, false);
+        final View view = inflater.inflate(R.layout.fragment_settings, container, false);
         radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup);
         radioButtonLow = (RadioButton) view.findViewById(R.id.radioButtonLow);
         radioButtonMed = (RadioButton) view.findViewById(R.id.radioButtonMed);

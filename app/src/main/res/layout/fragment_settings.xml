@@ -2,12 +2,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.upv.olcra.sportfuture.SettingsFragment1">
+    tools:context="com.upv.olcra.sportfuture.FragmentSettings">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/radioGroupText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radGroupText"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textSize="20sp" />
+
+        <RadioButton
+            android:id="@+id/radioButtonLow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radButLow" />
+
+        <TextView
+            android:id="@+id/textViewLow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="@string/settings_nivelBajo" />
+
+        <RadioButton
+            android:id="@+id/radioButtonMed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radButMed" />
+
+        <TextView
+            android:id="@+id/textViewMed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="@string/settings_nivelMedio" />
+
+        <RadioButton
+            android:id="@+id/radioButtonHigh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/radButHigh" />
+
+        <TextView
+            android:id="@+id/textViewHigh"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="30dp"
+            android:paddingEnd="30dp"
+            android:text="@string/settings_nivelAlto" />
+
+    </RadioGroup>
 </FrameLayout>
