@@ -15,8 +15,10 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,7 +38,6 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity
     private ScanSettings settings;
     private List<ScanFilter> filters;
     private BluetoothGatt mGatt;
+    public static final String STATE_DISCONNECTED = "STATE_DISCONNECTED";
+    public static final String STATE_CONNECTED = "STATE_CONNECTED";
     //private String deviceMAC = "33:33:33:33:33:33";
     private String deviceMAC = "E0:C7:9D:5C:DC:B8";
     //private UUID SERVICE_UUID = UUID.fromString("0000FF60-0000-1000-8000-00805f9b34fb");
@@ -106,16 +109,6 @@ public class MainActivity extends AppCompatActivity
         GlobalVariables.displayWidth = displayMetrics.widthPixels;
         System.out.println("Width: " + GlobalVariables.displayWidth);
 
-
-        /**FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });**/
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -127,8 +120,9 @@ public class MainActivity extends AppCompatActivity
 
 
         mHandler = new Handler();
+
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, "BLE Not Supported",
+            Toast.makeText(this, "BLE No Soportado",
                     Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -140,6 +134,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -158,6 +153,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+        unregisterReceiver(mGattUpdateReceiver);
         if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
             scanLeDevice(false);
             try{
@@ -192,7 +188,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
 
         if (!mScanning) {
@@ -221,8 +216,6 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        //int id = item.getItemId();
         Fragment fragment = null;
         Class fragmentClass = null;
         FragmentManager fragmentManager;
@@ -242,54 +235,6 @@ public class MainActivity extends AppCompatActivity
                 fragmentClass = FragmentHome.class;
                 break;
         }
-
-        /*if (id == R.id.nav_home) {
-            fragmentClass = FragmentHome.class;
-            try {
-                fragment = (Fragment) fragmentClass.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            *//*item.setChecked(true);
-            setTitle(item.getTitle());
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);*//*
-
-        } else if (id == R.id.nav_settings) {
-
-            fragmentClass = FragmentSettings.class;
-            try{
-                fragment = (Fragment) fragmentClass.newInstance();
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-
-            //getFragmentManager().beginTransaction().replace(R.id.flContent,new SettingsFragment1()).commit();
-
-            *//*getFragmentManager().beginTransaction()
-                    .replace(R.id.flContent, new SettingsFragment1())
-                    .commit();
-            item.setChecked(true);
-            setTitle(item.getTitle());
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);
-            //fragmentClass = SettingsFragment1.class;*//*
-        } else if (id == R.id.nav_help) {
-            fragmentClass = FragmentHelp.class;
-            try {
-                fragment = (Fragment) fragmentClass.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            *//*fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
-            item.setChecked(true);
-            setTitle(item.getTitle());
-            drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-            drawer.closeDrawer(GravityCompat.START);*//*
-
-        }*/
 
         try {
             fragment = (Fragment) fragmentClass.newInstance();
@@ -398,7 +343,7 @@ public class MainActivity extends AppCompatActivity
         if (mGatt == null) {
 
             mGatt = device.connectGatt(this, true, gattCallback);
-            Toast.makeText(this, "Connected to Device", Toast.LENGTH_SHORT).show();
+            //-Toast.makeText(this, "Connected to Device", Toast.LENGTH_SHORT).show();
             mScanning = false;
             scanLeDevice(false);
 
@@ -409,17 +354,23 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             Log.i("onConnectionStateChange", "Status: " + status);
+            String intentAction;
             switch (newState) {
                 case BluetoothProfile.STATE_CONNECTED:
+                    intentAction = STATE_CONNECTED;
+                    broadcastUpdate(intentAction);
                     Log.i("gattCallback", "STATE_CONNECTED");
                     mScanning = false;
                     gatt.discoverServices();
                     break;
                 case BluetoothProfile.STATE_DISCONNECTED:
+                    intentAction = STATE_DISCONNECTED;
+                    broadcastUpdate(intentAction);
                     Log.e("gattCallback", "STATE_DISCONNECTED");
                     gatt.close();
                     mGatt = null;
                     mScanning = false;
+
                     break;
                 default:
                     Log.e("gattCallback", "STATE_OTHER");
@@ -508,20 +459,85 @@ public class MainActivity extends AppCompatActivity
                                          BluetoothGattCharacteristic
                                                  characteristic, int status) {
             Log.i("onCharacteristicRead", characteristic.toString());
-            //gatt.disconnect();
         }
 
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, final BluetoothGattCharacteristic characteristic) {
-            //read the characteristic data
-            //ByteBuffer.wrap(data).getInt();
+            //double RATIO_ACC = (4.0/32767);
+
             byte[] data = characteristic.getValue();
             UUID uuid = characteristic.getUuid();
+
+            Utils.convertirArray(data,uuid);
+
+            /*float x = (characteristic.getValue()[1] & 0xFF) << 8 | characteristic.getValue()[0] & 0xFF;
+            if(x>32767) x=x-65535;
+            //x = x * RATIO_ACC;
+            float y = (characteristic.getValue()[3] & 0xFF) << 8 | characteristic.getValue()[2] & 0xFF;
+            if(y>32767) y=y-65535;
+            //y = y * RATIO_ACC;
+            float z = (characteristic.getValue()[5] & 0xFF) << 8 | characteristic.getValue()[4] & 0xFF;
+            if(z>32767) z=z-65535;
+            //z = z * RATIO_ACC;
+
+            System.out.println("X: " + x + " Y: " + y + " Z: " + z);
+            double flex = 0;
+            flex = Math.atan2(x,z);
+            flex = (flex * (180/Math.PI));
+            System.out.println("flex(x,z): " + flex);*/
+
+
+            /*byte[] data = characteristic.getValue();
+            UUID uuid = characteristic.getUuid();
+            System.out.println("UUID: " + characteristic.getUuid() +
+                                " Size: " + characteristic.getValue().length +
+                                " ARRAY: " + Arrays.toString(data) +
+                                " Properties: " + characteristic.getProperties());*/
+
+            //Utils.convertirArray(data,uuid);
+
+            //System.out.println("Size: " + data.length);
+            //System.out.println("ARRAY: " + Arrays.toString(data));
+
+
             //convAceleracion(data);
             //convGiroscopio(data);
-            //convertirArray(data, uuid);
-            System.out.println("UUID: " + uuid + " Valor: " + Arrays.toString(data));
+            //Utils.convertirArray(data, uuid);
+
+            //System.out.println("Size: " + data.length);
+            //System.out.println(data);
+            /*String aux ="[";
+            for(int i = 0; i < data.length; i++){
+                aux += String.format("0x%02X", data[i]) + ", ";
+            }
+            aux += "]";
+            System.out.println(aux);*/
+            //System.out.println("UUID: " + uuid + " Valor: " + Arrays.toString(data));
 
         }
     };
+
+    private void broadcastUpdate(final String action) {
+        final Intent intent = new Intent(action);
+        sendBroadcast(intent);
+    }
+
+    private final BroadcastReceiver mGattUpdateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if (action.equals(STATE_CONNECTED)) {
+                Toast.makeText(MainActivity.this, "Conectado al Dispositivo", Toast.LENGTH_SHORT).show();
+            } else if (action.equals(STATE_DISCONNECTED)) {
+                Toast.makeText(MainActivity.this, "Desconectado del Device", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    private static IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(STATE_CONNECTED);
+        intentFilter.addAction(STATE_DISCONNECTED);
+        return intentFilter;
+    }
 }

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public class GlobalVariables extends Application {
 
-    public final static HashMap<UUID,Double> values = new HashMap<>();
+    public final static HashMap<UUID,Double> values = new HashMap<UUID,Double>();
 
 
      /* 0 = low
