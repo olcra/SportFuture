@@ -16,10 +16,8 @@ public class FragmentSettings extends Fragment {
     RadioButton radioButtonLow;
     RadioButton radioButtonMed;
     RadioButton radioButtonHigh;
-    GlobalVariables myGV;
 
     public FragmentSettings() {
-        // Required empty public constructor
     }
 
     @Override
@@ -37,6 +35,7 @@ public class FragmentSettings extends Fragment {
         radioButtonLow = (RadioButton) view.findViewById(R.id.radioButtonLow);
         radioButtonMed = (RadioButton) view.findViewById(R.id.radioButtonMed);
         radioButtonHigh = (RadioButton) view.findViewById(R.id.radioButtonHigh);
+
         switch(GlobalVariables.notificationValue){
             case 0:
                 radioButtonLow.setChecked(true);
@@ -69,9 +68,7 @@ public class FragmentSettings extends Fragment {
                 }
             }
         });
-
         return view;
-
     }
 
     @Override
